@@ -1,12 +1,14 @@
+import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Scanner;
+
 
 public class Server extends Thread {
 
@@ -61,7 +63,7 @@ public class Server extends Thread {
         private Socket connection;
 
         private OutputStream outputStream;
-        private Scanner inputScanner;
+        private BufferedReader inputReader;
 
         private String readString;
 
@@ -82,7 +84,7 @@ public class Server extends Thread {
             try {
                 outputStream = connection.getOutputStream();
                 outputStream.flush();
-                inputScanner = new Scanner(connection.getInputStream());
+                inputReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -91,10 +93,14 @@ public class Server extends Thread {
         public void run() {
             running = true;
             while (!running) {
-                synchronized (inputScanner) {
-                    readString = inputScanner.nextLine();
-                    log("Received \"" + readString + "\" from connection " + index);
-                    send("Received \"" + readString + "\" from connection " + index);
+                try {
+                    synchronized (inputReader) {
+                        readString = inputReader.readLine();
+                        log("Received \"" + readString + "\" from connection " + index);
+                        send("Received \"" + readString + "\" from connection " + index);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
             log(hostname + " left");
@@ -119,7 +125,7 @@ public class Server extends Thread {
         public void close() {
             running = false;
             try {
-                inputScanner.close();
+                inputReader.close();
                 outputStream.close();
                 connection.close();
                 threads.remove(this);
