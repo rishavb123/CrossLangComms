@@ -53,6 +53,9 @@ public class Client extends Thread{
                     readString = inputReader.readLine();
                     System.out.println("Got the following back: " + readString);
                 }
+            } catch (SocketException e) {
+                System.out.println("Server closed connection");
+                this.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -63,7 +66,7 @@ public class Client extends Thread{
         synchronized (outputStream) {
             try {
                 if (s != null)
-                    outputStream.write(s.getBytes());
+                    outputStream.write((s + "\n").getBytes());
                 outputStream.flush();
             } catch (IOException e) {
                 e.printStackTrace();

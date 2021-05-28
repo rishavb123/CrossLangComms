@@ -77,7 +77,7 @@ public class Server extends Thread {
             this.index = index;
             this.hostname = connection.getInetAddress().getHostName();
             this.setupStreams();
-            log(hostname + " joined");
+            log("Joined");
         }
 
         private void setupStreams() {
@@ -92,18 +92,21 @@ public class Server extends Thread {
 
         public void run() {
             running = true;
-            while (!running) {
+            while (running) {
                 try {
                     synchronized (inputReader) {
                         readString = inputReader.readLine();
-                        log("Received \"" + readString + "\" from connection " + index);
+                        log("Received \"" + readString);
                         send("Received \"" + readString + "\" from connection " + index);
                     }
+                } catch (SocketException e) {
+                    log("Client terminated connection");
+                    this.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            log(hostname + " left");
+            log("Left");
         }
 
         public String read() {
@@ -114,7 +117,7 @@ public class Server extends Thread {
             synchronized (outputStream) {
                 try {
                     if (s != null)
-                        outputStream.write(s.getBytes());
+                        outputStream.write((s + "\n").getBytes());
                     outputStream.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -143,7 +146,7 @@ public class Server extends Thread {
         }
 
         private void log(String s) {
-            System.out.println("\tConnection " + index + ": " + s);
+            System.out.println("\tConnection " + index + " (" + hostname + "): " + s);
         }
 
     }
