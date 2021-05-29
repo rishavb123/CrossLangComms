@@ -32,7 +32,13 @@ public class DataObject {
     }
 
     public static boolean validate(String type, String val) {
-        return true;
+        switch (type.toLowerCase()) {
+            case "int":
+            case "integer":
+                return val.matches("-?(0|[1-9]\\d*)");
+            default:
+                return true;
+        }
     }
 
 }
