@@ -128,8 +128,9 @@ public class MemoryServer extends Thread {
                         return "P To get a value: GET {key} -> P {type} {value}";
                     case "PUT":
                         return "P To put a value into a key or to change the type of a key: PUT {key} {type} {value} -> P ";
+                    case "SET":
                     case "UPDATE":
-                        return "P To update a value into a key (do not change type): UPDATE {key} {value} -> P ";
+                        return "P To update a value into a key (do not change type): " + command.toUpperCase() + " {key} {value} -> P ";
                     case "DOC":
                         return "P To document any command: DOC {command} -> P {docs}";
                     default:
@@ -152,6 +153,7 @@ public class MemoryServer extends Thread {
                     String val = args[2];
                     memory.put(key, new DataObject(key, type, val));
                     return "P ";
+                case "SET":
                 case "UPDATE":
                     if (args.length < 2)
                         return "F command must include the key and val arguments";
