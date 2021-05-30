@@ -132,7 +132,10 @@ public class MemoryServer extends Thread {
                         return "P To put a value into a key or to change the type of a key: PUT {key} {type} {value} -> P ";
                     case "SET":
                     case "UPDATE":
-                        return "P To update a value into a key (do not change type): " + command.toUpperCase() + " {key} {value} -> P ";
+                        return "P To update a value into a key (do not change type): " + command.toUpperCase()
+                                + " {key} {value} -> P ";
+                    case "DELETE":
+                        return "P To delete a key from the shared memory: DELETE {key} -> P ";
                     case "DOC":
                         return "P To document any command: DOC {command} -> P {docs}";
                     default:
@@ -171,6 +174,12 @@ public class MemoryServer extends Thread {
                         return "P ";
                     }
                     return "F key " + key + " does not exist";
+                case "DELETE":
+                    if (memory.containsKey(key)) {
+                        memory.remove(key);
+                        return "P ";
+                    }
+                    return "F key " + key + " does not exist";                    
                 default:
                     return "F Unknown command " + command;
             }
