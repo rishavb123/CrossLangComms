@@ -9,6 +9,8 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.xml.crypto.Data;
+
 public class MemoryServer extends Thread {
 
     private int port;
@@ -151,8 +153,11 @@ public class MemoryServer extends Thread {
                         return "F command must include the key, type, and val arguments";
                     String type = args[1];
                     String val = args[2];
-                    memory.put(key, new DataObject(key, type, val));
-                    return "P ";
+                    if (DataObject.validate(type, val)) {
+                        memory.put(key, new DataObject(key, type, val));
+                        return "P ";
+                    }
+                    return "F value " + val + " not of type " + type;
                 case "SET":
                 case "UPDATE":
                     if (args.length < 2)
