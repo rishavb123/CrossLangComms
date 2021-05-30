@@ -80,7 +80,6 @@ public class TestClient extends Thread{
                 e.printStackTrace();
             }
         }
-        System.out.println("Sent " + s);
     }
     
     public void close() {
