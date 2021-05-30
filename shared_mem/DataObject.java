@@ -35,7 +35,15 @@ public class DataObject {
         switch (type.toLowerCase()) {
             case "int":
             case "integer":
-                return val.matches("-?(0|[1-9]\\d*)");
+            case "long":
+            case "short":
+                return val.matches("[+-]?[0-9]+");
+            case "float":
+            case "double":
+                return val.matches("[+-]?[0-9]+(.[0-9])?+");
+            case "boolean":
+            case "bool":
+                return val.toLowerCase().matches("(false|true)");
             default:
                 return true;
         }
