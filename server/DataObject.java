@@ -45,6 +45,7 @@ public class DataObject {
             case "bool":
                 return val.toLowerCase().matches("(false|true)");
             case "string":
+            case "str":
                 return true;
             case "char":
             case "chr":
