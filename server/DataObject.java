@@ -44,6 +44,11 @@ public class DataObject {
             case "boolean":
             case "bool":
                 return val.toLowerCase().matches("(false|true)");
+            case "string":
+                return true;
+            case "char":
+            case "chr":
+                return val.length() == 1;
             default:
                 return true;
         }
