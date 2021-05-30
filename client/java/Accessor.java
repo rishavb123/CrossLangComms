@@ -118,8 +118,14 @@ public class Accessor {
     public void delete(String key) throws KeyException {
         send(String.format("DELETE %s", key));
         String resp = receive();
-        if (resp.charAt(0) != 'P') 
+        if (resp.charAt(0) != 'P')
             throw new KeyException(resp.substring(2));
+    }
+    
+    public String doc(String command) {
+        send(String.format("DOC %s", command));
+        String resp = receive();
+        return resp.substring(2);
     }
 
     public void close() {
