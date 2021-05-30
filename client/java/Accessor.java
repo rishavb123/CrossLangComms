@@ -115,6 +115,13 @@ public class Accessor {
         }
     }
 
+    public void delete(String key) throws KeyException {
+        send(String.format("DELETE %s", key));
+        String resp = receive();
+        if (resp.charAt(0) != 'P') 
+            throw new KeyException(resp.substring(2));
+    }
+
     public void close() {
         try {
             inputReader.close();
@@ -205,6 +212,8 @@ public class Accessor {
         accessor.put("stringTest2", "SPACE HERE");
 
         System.out.println(accessor.get("stringTest2"));
+
+        accessor.delete("stringTest2");
 
     }
 
