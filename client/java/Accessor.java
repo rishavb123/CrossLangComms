@@ -221,6 +221,8 @@ public class Accessor {
 
         accessor.delete("stringTest2");
 
+        System.out.println(accessor.doc("doc"));
+
     }
 
 }
