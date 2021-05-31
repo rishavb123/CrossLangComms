@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.net.SocketException;
 
 public class Accessor {
-    
+
     public static final String SPACE_REPLACEMENT = "~`\t";
 
     private String host;
@@ -102,7 +102,7 @@ public class Accessor {
         send(String.format("SET %s %s", key, val));
         String resp = receive();
         if (resp.charAt(0) != 'P') {
-            throw new ServerException("Something went wrong with the server as the SET command should never fail.");
+            throw new ServerException("Something went wrong with the server as this command should never fail.");
         }
     }
 
@@ -126,7 +126,7 @@ public class Accessor {
         if (resp.charAt(0) != 'P')
             throw new KeyException(resp.substring(2));
     }
-    
+
     public String doc(String command) throws ServerException {
         send(String.format("DOC %s", command));
         String resp = receive();
@@ -139,7 +139,7 @@ public class Accessor {
         send("KEYS");
         String resp = receive();
         if (resp.charAt(0) != 'P') {
-            throw new ServerException("Something went wrong with the server as the SET command should never fail.");
+            throw new ServerException("Something went wrong with the server as this command should never fail.");
         }
         return resp.substring(3, resp.length() - 1).split(", ");
     }
@@ -148,7 +148,7 @@ public class Accessor {
         send("CLEAR");
         String resp = receive();
         if (resp.charAt(0) != 'P') {
-            throw new ServerException("Something went wrong with the server as the SET command should never fail.");
+            throw new ServerException("Something went wrong with the server as this command should never fail.");
         }
     }
 
@@ -176,7 +176,7 @@ public class Accessor {
         send("DISPLAY");
         String resp = receive();
         if (resp.charAt(0) != 'P') {
-            throw new ServerException("Something went wrong with the server as the SET command should never fail.");
+            throw new ServerException("Something went wrong with the server as this command should never fail.");
         }
         return resp.substring(2).replaceAll(SPACE_REPLACEMENT, " ");
     }
@@ -238,7 +238,7 @@ public class Accessor {
 
     public static void main(String[] args) {
         Accessor accessor;
-        if (args.length > 0) 
+        if (args.length > 0)
             accessor = new Accessor("localhost", Integer.parseInt(args[0]));
         else
             accessor = new Accessor();
