@@ -1,6 +1,9 @@
 import socket
+from sys import argv
 
 class Accessor:
+
+    SPACE_REPLACEMENT = "~`*@!#"
 
     def __init__(self, host="localhost", port=8000) -> None:
         self.host = host
@@ -13,15 +16,111 @@ class Accessor:
         self.socket.connect((self.host, self.port))
 
     def __send(self, s):
-        self.socket.sendall(bytes(s, 'utf-8'))
+        self.socket.sendall(bytes((s + "\n"), "utf-8"))
 
     def __receive(self):
-        return repr(self.socket.recv(1024))
+        return self.socket.recv(1024).decode("utf-8")[:-1]
+
+    def get(self, key):
+        self.__send(f"GET {key}")
+        resp = self.__receive()
+        if resp[0] == "P":
+            _, t, val = resp.split(" ")
+            return self.resolve_type(t, val)
+        raise Accessor.KeyException(resp[2:])
+
+    def put(self, key, obj):
+        t, val = self.resolve_object(obj)
+        self.__send(f"PUT {key} {t} {val}")
+        resp = self.__receive()
+        if resp[0] != "P":
+            raise Accessor.TypeException(resp[2:])
+
+    def set(self, key, obj):
+        self.update(key, obj)
+
+    def update(self, key, obj):
+        _, val = self.resolve_object(obj)
+        self.__send(f"UPDATE {key} {val}")
+        resp = self.__receive()
+        if resp[0] != "P":
+            arr = resp.split(" ")
+            if arr[1] == "key":
+                raise Accessor.KeyException(resp[2:])
+            elif arr[1] == "value":
+                raise Accessor.TypeException(resp[2:])
+
+    def delete(self, key):
+        self.__send(f"DELETE {key}")
+        resp = self.__receive()
+        if resp[0] != "P":
+            raise Accessor.KeyException(resp[2:])
+
+    def doc(self, command):
+        self.__send(f"DOC {command}")
+        resp = self.__receive()
+        return resp[2:]
+
+    @staticmethod
+    def resolve_object(obj):
+        t = type(obj).__name__
+        val = str(obj)
+        if t == "int":
+            if abs(obj) < 2147483648 / 10:
+                return "integer", val
+            else:
+                return "long", val
+        elif t == "float":
+            return "double", val
+        elif t == "str":
+            return "string", val.replace(" ", Accessor.SPACE_REPLACEMENT)
+        elif t == "bool":
+            return "boolean", val.lower()
+        return t, val
+
+    @staticmethod
+    def resolve_type(t, val):
+        if t in {"int", "integer", "short", "long"}:
+            return int(val)
+        elif t in {"float", "double"}:
+            return float(val)
+        elif t in {"bool", "boolean"}:
+            return val.title() == "True"
+        elif t in {"str", "string", "chr", "char"}:
+            return val.replace(Accessor.SPACE_REPLACEMENT, " ")
+        return val
 
     def close(self):
         self.socket.shutdown(socket.SHUT_RDWR)
         self.socket.close()
 
+    
+
+    class KeyException(Exception):
+        pass
+
+    class TypeException(Exception):
+        pass
+
 if __name__ == "__main__":
-    accessor = Accessor()
+    import sys
+    port = 8000 if len(sys.argv) == 1 else int(sys.argv[1])
+
+    accessor = Accessor(port=port)
+
+    x = accessor.get("x")
+    x += 1
+    accessor.update("x", x)
+
+    accessor.put("hi", 1.2)
+    accessor.put("test", True)
+    accessor.put("stringTest", "hisdflksdjf")
+    accessor.put("stringTest2", "SPACE HERE")
+
+    print(accessor.get("stringTest2"))
+
+    accessor.delete("stringTest2")
+
+    print(accessor.doc("doc"))
+
     accessor.close()
