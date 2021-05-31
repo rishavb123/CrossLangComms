@@ -100,8 +100,10 @@ public class MemoryServer extends Thread {
                 try {
                     synchronized (inputReader) {
                         readString = inputReader.readLine();
-                        this.send(processReadString(readString));
-                        log("Received \"" + readString + "\"");
+                        if (readString != null) {
+                            this.send(processReadString(readString));
+                            log("Received \"" + readString + "\"");
+                        }
                     }
                 } catch (SocketException e) {
                     log("Client terminated connection");
