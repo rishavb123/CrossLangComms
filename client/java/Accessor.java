@@ -83,13 +83,13 @@ public class Accessor {
             String[] arr = resp.split(" ");
             String type = arr[1];
             String val = arr[2];
-            return typeResolver(type, val);
+            return resolveType(type, val);
         }
         throw new KeyException(resp.substring(2));
     }
 
     public void put(String key, Object obj) throws TypeException {
-        String[] arr = objectResolver(obj);
+        String[] arr = resolveObject(obj);
         send(String.format("PUT %s %s %s", key, arr[0], arr[1]));
         String resp = receive();
         if (resp.charAt(0) != 'P') {
@@ -146,7 +146,7 @@ public class Accessor {
         return port;
     }
 
-    public static String[] objectResolver(Object object) {
+    public static String[] resolveObject(Object object) {
         String[] arr = object.getClass().getName().split("\\.");
         String type = arr[arr.length - 1].toLowerCase();
         String val = object.toString();
@@ -156,7 +156,7 @@ public class Accessor {
         return new String[] { type, val };
     }
 
-    public static Object typeResolver(String type, String val) {
+    public static Object resolveType(String type, String val) {
         switch (type.toLowerCase()) {
             case "int":
             case "integer":
