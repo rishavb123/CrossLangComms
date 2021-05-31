@@ -28,7 +28,16 @@ public class DataObject {
 
     @Override
     public String toString() {
-        return type + " " + value;
+        switch (type.toLowerCase()) {
+            case "string":
+            case "str":
+                return type + " \"" + value + "\"";
+            case "char":
+            case "chr":
+                return type + " \'" + value + "\'";
+            default:
+                return type + " " + value;
+        }
     }
 
     public static boolean validate(String type, String val) {

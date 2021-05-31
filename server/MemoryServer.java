@@ -122,34 +122,46 @@ public class MemoryServer extends Thread {
             String[] args = new String[arr.length - 1];
             System.arraycopy(arr, 1, args, 0, args.length);
 
-            if (command.toUpperCase().equals("DOC")) {
-                if (args.length == 0) {
-                    return "F command must include the command to document";
-                }
-                String docCommand = args[0];
-                switch (docCommand.toUpperCase()) {
-                    case "GET":
-                        return "P To get a value: GET {key} -> P {type} {value}";
-                    case "PUT":
-                        return "P To put a value into a key or to change the type of a key: PUT {key} {type} {value} -> P ";
-                    case "SET":
-                        return "P To essentially keep the type of a key if possible. Otherwise, the program will infer the type and set the key to that type: SET {key} {value} -> P ";
-                    case "UPDATE":
-                        return "P To update a value into a key (do not change type): " + command.toUpperCase()
-                                + " {key} {value} -> P ";
-                    case "DELETE":
-                        return "P To delete a key from the shared memory: DELETE {key} -> P ";
-                    case "DOC":
-                        return "P To document any command: DOC {command} -> P {docs}";
-                    case "EXIT":
-                        return "P To exit and close the connection: EXIT -> D ";
-                    default:
-                        return "P Error messages: * -> F {message which can include spaces}";
-                }
-            }
-            else if (command.toUpperCase().equals("EXIT")) {
-                running = false;
-                return "T ";
+            switch(command.toUpperCase()) {
+                case "DOC":
+                    if (args.length == 0) {
+                        return "F command must include the command to document";
+                    }
+                    String docCommand = args[0];
+                    switch (docCommand.toUpperCase()) {
+                        case "GET":
+                            return "P To get a value: GET {key} -> P {type} {value}";
+                        case "PUT":
+                            return "P To put a value into a key or to change the type of a key: PUT {key} {type} {value} -> P ";
+                        case "SET":
+                            return "P To essentially keep the type of a key if possible. Otherwise, the program will infer the type and set the key to that type: SET {key} {value} -> P ";
+                        case "UPDATE":
+                            return "P To update a value into a key (do not change type): " + command.toUpperCase()
+                                    + " {key} {value} -> P ";
+                        case "DELETE":
+                            return "P To delete a key from the shared memory: DELETE {key} -> P ";
+                        case "DOC":
+                            return "P To document any command: DOC {command} -> P {docs}";
+                        case "KEYS":
+                            return "P To get a list of all the keys: KEYS -> P {keys}";
+                        case "DISP":
+                        case "DISPLAY":
+                            return String.format(
+                                    "P To display all the values stored in the share memory: %s -> P {output}",
+                                    docCommand.toUpperCase());
+                        case "EXIT":
+                            return "P To exit and close the connection: EXIT -> D ";
+                        default:
+                            return "P Error messages: * -> F {message which can include spaces}";
+                    }
+                case "KEYS":
+                    return "P " + memory.keySet().toString();
+                case "DISP":
+                case "DISPLAY":
+                    return "P " + memory.toString();
+                case "EXIT":
+                    running = false;
+                    return "T ";
             }
 
             if (args.length == 0)
