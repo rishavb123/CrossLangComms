@@ -140,9 +140,15 @@ public class MemoryServer extends Thread {
                         return "P To delete a key from the shared memory: DELETE {key} -> P ";
                     case "DOC":
                         return "P To document any command: DOC {command} -> P {docs}";
+                    case "EXIT":
+                        return "P To exit and close the connection: EXIT -> D ";
                     default:
                         return "P Error messages: * -> F {message which can include spaces}";
                 }
+            }
+            else if (command.toUpperCase().equals("EXIT")) {
+                running = false;
+                return "T ";
             }
 
             if (args.length == 0)
@@ -181,7 +187,7 @@ public class MemoryServer extends Thread {
                         memory.remove(key);
                         return "P ";
                     }
-                    return "F key " + key + " does not exist";                    
+                    return "F key " + key + " does not exist";             
                 default:
                     return "F Unknown command " + command;
             }

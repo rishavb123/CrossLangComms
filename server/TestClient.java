@@ -15,8 +15,6 @@ public class TestClient extends Thread{
 
     private Socket connection;
 
-    private String readString;
-
     private volatile boolean running;
 
     private String host;
@@ -51,16 +49,17 @@ public class TestClient extends Thread{
 
     public void run() {
         running = true;
-        System.out.print("> ");
         String command;
-        while (running && !(command = scanner.nextLine()).equals("exit")) {
+        String readString = "S ";
+        while (running && readString.charAt(0) != 'T') {
+            System.out.print("> ");
+            command = scanner.nextLine();
             try {
                 this.send(command);
                 synchronized (inputReader) {
                     readString = inputReader.readLine();
                     System.out.println(readString);
                 }
-                System.out.print("> ");
             } catch (SocketException e) {
                 System.out.println("Server closed connection");
                 this.close();
@@ -91,10 +90,6 @@ public class TestClient extends Thread{
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public String read() {
-        return readString;
     }
 
     public String getHost() {

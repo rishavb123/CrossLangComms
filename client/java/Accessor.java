@@ -130,6 +130,8 @@ public class Accessor {
 
     public void close() {
         try {
+            send("EXIT");
+            receive();
             inputReader.close();
             outputStream.close();
             connection.close();
@@ -222,7 +224,7 @@ public class Accessor {
         accessor.delete("stringTest2");
 
         System.out.println(accessor.doc("doc"));
-        
+
         accessor.close();
 
     }

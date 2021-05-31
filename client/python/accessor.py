@@ -97,10 +97,10 @@ class Accessor:
         return val
 
     def close(self):
+        self.__send("EXIT")
+        self.__receive()
         self.socket.shutdown(socket.SHUT_RDWR)
         self.socket.close()
-
-    
 
     class KeyException(Exception):
         pass
