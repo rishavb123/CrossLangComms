@@ -1,0 +1,26 @@
+{
+  "name": "js-accessor",
+  "version": "1.0.0",
+  "description": "A js module to access the shared memory hosted by the java tcp server",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "test": "nodemon main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rishavb123/CrossLangComms.git"
+  },
+  "keywords": [
+    "tcp",
+    "socket",
+    "shared",
+    "java"
+  ],
+  "author": "bhagat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rishavb123/CrossLangComms/issues"
+  },
+  "homepage": "https://github.com/rishavb123/CrossLangComms#readme"
+}
