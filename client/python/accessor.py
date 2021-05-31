@@ -26,18 +26,18 @@ class Accessor:
         resp = self.__receive()
         if resp[0] == "P":
             _, t, val = resp.split(" ")
-            return self.resolve_type(t, val)
+            return Accessor.resolve_type(t, val)
         raise Accessor.KeyException(resp[2:])
 
     def put(self, key, obj):
-        t, val = self.resolve_object(obj)
+        t, val = Accessor.resolve_object(obj)
         self.__send(f"PUT {key} {t} {val}")
         resp = self.__receive()
         if resp[0] != "P":
             raise Accessor.TypeException(resp[2:])
 
     def set(self, key, obj):
-        _, val = self.resolve_object(obj)
+        _, val = Accessor.resolve_object(obj)
         self.__send(f"SET {key} {val}")
         resp = self.__receive()
         if resp[0] != "P":
@@ -46,7 +46,7 @@ class Accessor:
             )
 
     def update(self, key, obj):
-        _, val = self.resolve_object(obj)
+        _, val = Accessor.resolve_object(obj)
         self.__send(f"UPDATE {key} {val}")
         resp = self.__receive()
         if resp[0] != "P":
