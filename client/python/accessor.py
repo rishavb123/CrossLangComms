@@ -37,7 +37,11 @@ class Accessor:
             raise Accessor.TypeException(resp[2:])
 
     def set(self, key, obj):
-        self.update(key, obj)
+        _, val = self.resolve_object(obj)
+        self.__send(f"SET {key} {val}")
+        resp = self.__receive()
+        if resp[0] != "P":
+            raise Accessor.ServerException("Something went wrong with the server as the SET command should never fail.")
 
     def update(self, key, obj):
         _, val = self.resolve_object(obj)
@@ -65,7 +69,7 @@ class Accessor:
         return self.get(key)
 
     def __setitem__(self, key, val):
-        self.put(key, val)
+        self.set(key, val)
 
     @staticmethod
     def resolve_object(obj):
@@ -102,6 +106,9 @@ class Accessor:
         self.socket.shutdown(socket.SHUT_RDWR)
         self.socket.close()
 
+    class ServerException(Exception):
+        pass
+
     class KeyException(Exception):
         pass
 
@@ -129,10 +136,7 @@ if __name__ == "__main__":
 
     print(accessor.doc("doc"))
 
-    print(accessor["x"])
-
-    accessor["x"] += 5
-
-    print(accessor["x"])
+    accessor["y"] = 2.5
+    print(accessor["y"])
 
     accessor.close()
