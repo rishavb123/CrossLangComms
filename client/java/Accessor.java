@@ -102,7 +102,7 @@ public class Accessor {
     }
 
     public void update(String key, Object obj) throws KeyException, TypeException {
-        String val = obj.toString();
+        String val = resolveObject(obj)[1];
         send(String.format("UPDATE %s %s", key, val));
         String resp = receive();
         if (resp.charAt(0) != 'P') {
