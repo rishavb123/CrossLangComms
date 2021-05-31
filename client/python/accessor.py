@@ -61,6 +61,12 @@ class Accessor:
         resp = self.__receive()
         return resp[2:]
 
+    def __getitem__(self, key):
+        return self.get(key)
+
+    def __setitem__(self, key, val):
+        self.put(key, val)
+
     @staticmethod
     def resolve_object(obj):
         t = type(obj).__name__
@@ -122,5 +128,11 @@ if __name__ == "__main__":
     accessor.delete("stringTest2")
 
     print(accessor.doc("doc"))
+
+    print(accessor["x"])
+
+    accessor["x"] += 5
+
+    print(accessor["x"])
 
     accessor.close()
