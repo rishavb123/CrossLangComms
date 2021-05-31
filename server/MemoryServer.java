@@ -155,6 +155,8 @@ public class MemoryServer extends Thread {
                             return String.format(
                                     "P To display all the values stored in the share memory: %s -> P {output}",
                                     docCommand.toUpperCase());
+                        case "CLEAR":
+                            return "P To clear all the data inside the map: CLEAR -> P ";
                         case "EXIT":
                             return "P To exit and close the connection: EXIT -> D ";
                         default:
@@ -165,6 +167,9 @@ public class MemoryServer extends Thread {
                 case "DISP":
                 case "DISPLAY":
                     return "P " + memory.toString();
+                case "CLEAR":
+                    memory.clear();
+                    return "P ";
                 case "EXIT":
                     running = false;
                     return "T ";
