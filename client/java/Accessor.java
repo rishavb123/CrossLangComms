@@ -97,8 +97,13 @@ public class Accessor {
         }
     }
 
-    public void set(String key, Object obj) throws KeyException, TypeException {
-        update(key, obj);
+    public void set(String key, Object obj) throws ServerException {
+        String val = resolveObject(obj)[1];
+        send(String.format("SET %s %s", key, val));
+        String resp = receive();
+        if (resp.charAt(0) != 'P') {
+            throw new ServerException("Something went wrong with the server as the SET command should never fail.");
+        }
     }
 
     public void update(String key, Object obj) throws KeyException, TypeException {
@@ -224,6 +229,9 @@ public class Accessor {
         accessor.delete("stringTest2");
 
         System.out.println(accessor.doc("doc"));
+
+        accessor.set("y", 2.5);
+        System.out.println(accessor.get("y"));
 
         accessor.close();
 
