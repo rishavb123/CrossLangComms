@@ -3,7 +3,7 @@ from sys import argv
 
 class Accessor:
 
-    SPACE_REPLACEMENT = "~`*@!#"
+    SPACE_REPLACEMENT = "~`\t"
 
     def __init__(self, host="localhost", port=8000) -> None:
         self.host = host
@@ -63,13 +63,30 @@ class Accessor:
     def doc(self, command):
         self.__send(f"DOC {command}")
         resp = self.__receive()
+        if resp[0] != "P":
+            raise Accessor.ServerException(resp[2:])
         return resp[2:]
+
+    def keys(self):
+        self.__send("KEYS")
+        resp = self.__receive()
+        if resp[0] != "P":
+            raise Accessor.ServerException(resp[2:])
+        return resp[3:-1].split(", ")
 
     def __getitem__(self, key):
         return self.get(key)
 
     def __setitem__(self, key, val):
         self.set(key, val)
+
+    def __str__(self):
+        self.__send("DISPLAY")
+        resp = self.__receive()
+        if resp[0] != "P":
+            raise Accessor.ServerException("Something went wrong with the server as the SET command should never fail.")
+        return resp[2:].replace(Accessor.SPACE_REPLACEMENT, " ")
+        
 
     @staticmethod
     def resolve_object(obj):
@@ -131,6 +148,7 @@ if __name__ == "__main__":
     accessor.put("stringTest2", "SPACE HERE")
 
     print(accessor.get("stringTest2"))
+    print(accessor)
 
     accessor.delete("stringTest2")
 
@@ -138,5 +156,9 @@ if __name__ == "__main__":
 
     accessor["y"] = 2.5
     print(accessor["y"])
+
+    for key in accessor.keys():
+        print(key + " ", end="")
+    print()
 
     accessor.close()

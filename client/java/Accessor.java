@@ -8,7 +8,7 @@ import java.net.SocketException;
 
 public class Accessor {
     
-    public static final String SPACE_REPLACEMENT = "~`*@!#";
+    public static final String SPACE_REPLACEMENT = "~`\t";
 
     private String host;
     private int port;
@@ -127,10 +127,21 @@ public class Accessor {
             throw new KeyException(resp.substring(2));
     }
     
-    public String doc(String command) {
+    public String doc(String command) throws ServerException {
         send(String.format("DOC %s", command));
         String resp = receive();
+        if (resp.charAt(0) != 'P')
+            throw new ServerException(resp.substring(2));
         return resp.substring(2);
+    }
+
+    public String[] keys() throws ServerException  {
+        send("KEYS");
+        String resp = receive();
+        if (resp.charAt(0) != 'P') {
+            throw new ServerException("Something went wrong with the server as the SET command should never fail.");
+        }
+        return resp.substring(3, resp.length() - 1).split(", ");
     }
 
     public void close() {
@@ -151,6 +162,15 @@ public class Accessor {
 
     public int getPort() {
         return port;
+    }
+
+    public String toString() {
+        send("DISPLAY");
+        String resp = receive();
+        if (resp.charAt(0) != 'P') {
+            throw new ServerException("Something went wrong with the server as the SET command should never fail.");
+        }
+        return resp.substring(2).replaceAll(SPACE_REPLACEMENT, " ");
     }
 
     public static String[] resolveObject(Object object) {
@@ -226,12 +246,17 @@ public class Accessor {
 
         System.out.println(accessor.get("stringTest2"));
 
+        System.out.println(accessor);
         accessor.delete("stringTest2");
 
         System.out.println(accessor.doc("doc"));
 
         accessor.set("y", 2.5);
         System.out.println(accessor.get("y"));
+
+        for (String key : accessor.keys())
+            System.out.print(key + " ");
+        System.out.println();
 
         accessor.close();
 
