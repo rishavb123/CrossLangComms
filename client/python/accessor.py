@@ -1,5 +1,4 @@
 import socket
-from sys import argv
 
 
 class Accessor:
