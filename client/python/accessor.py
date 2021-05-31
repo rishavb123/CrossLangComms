@@ -1,6 +1,7 @@
 import socket
 from sys import argv
 
+
 class Accessor:
 
     SPACE_REPLACEMENT = "~`\t"
@@ -41,7 +42,9 @@ class Accessor:
         self.__send(f"SET {key} {val}")
         resp = self.__receive()
         if resp[0] != "P":
-            raise Accessor.ServerException("Something went wrong with the server as the SET command should never fail.")
+            raise Accessor.ServerException(
+                "Something went wrong with the server as this command should never fail."
+            )
 
     def update(self, key, obj):
         _, val = self.resolve_object(obj)
@@ -71,7 +74,9 @@ class Accessor:
         self.__send("KEYS")
         resp = self.__receive()
         if resp[0] != "P":
-            raise Accessor.ServerException("Something went wrong with the server as the SET command should never fail.")
+            raise Accessor.ServerException(
+                "Something went wrong with the server as this command should never fail."
+            )
         return resp[3:-1].split(", ")
 
     def clear(self):
@@ -90,9 +95,10 @@ class Accessor:
         self.__send("DISPLAY")
         resp = self.__receive()
         if resp[0] != "P":
-            raise Accessor.ServerException("Something went wrong with the server as the SET command should never fail.")
+            raise Accessor.ServerException(
+                "Something went wrong with the server as this command should never fail."
+            )
         return resp[2:].replace(Accessor.SPACE_REPLACEMENT, " ")
-        
 
     @staticmethod
     def resolve_object(obj):
@@ -138,8 +144,10 @@ class Accessor:
     class TypeException(Exception):
         pass
 
+
 if __name__ == "__main__":
     import sys
+
     port = 8000 if len(sys.argv) == 1 else int(sys.argv[1])
 
     accessor = Accessor(port=port)
