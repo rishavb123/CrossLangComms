@@ -71,8 +71,14 @@ class Accessor:
         self.__send("KEYS")
         resp = self.__receive()
         if resp[0] != "P":
-            raise Accessor.ServerException(resp[2:])
+            raise Accessor.ServerException("Something went wrong with the server as the SET command should never fail.")
         return resp[3:-1].split(", ")
+
+    def clear(self):
+        self.__send("CLEAR")
+        resp = self.__receive()
+        if resp[0] != "P":
+            raise Accessor.ServerException(resp[2:])
 
     def __getitem__(self, key):
         return self.get(key)

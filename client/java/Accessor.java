@@ -135,13 +135,21 @@ public class Accessor {
         return resp.substring(2);
     }
 
-    public String[] keys() throws ServerException  {
+    public String[] keys() throws ServerException {
         send("KEYS");
         String resp = receive();
         if (resp.charAt(0) != 'P') {
             throw new ServerException("Something went wrong with the server as the SET command should never fail.");
         }
         return resp.substring(3, resp.length() - 1).split(", ");
+    }
+
+    public void clear() throws ServerException {
+        send("CLEAR");
+        String resp = receive();
+        if (resp.charAt(0) != 'P') {
+            throw new ServerException("Something went wrong with the server as the SET command should never fail.");
+        }
     }
 
     public void close() {
