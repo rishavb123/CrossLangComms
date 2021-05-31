@@ -125,7 +125,13 @@ public class MemoryServer extends Thread {
             switch(command.toUpperCase()) {
                 case "DOC":
                     if (args.length == 0) {
-                        return "F command must include the command to document";
+                        String[] commands = { "GET", "PUT", "SET", "UPDATE", "DELETE", "DOC", "KEYS", "DISP", "DISPLAY",
+                                "EXIT" };
+                        String output = "F Please use a command from the following list for the DOC command [";
+                        for (String cmd : commands) {
+                            output += String.format("%s, ", cmd);
+                        }
+                        return output.substring(0, output.length() - 2) + "]";
                     }
                     String docCommand = args[0];
                     switch (docCommand.toUpperCase()) {
