@@ -133,6 +133,7 @@ public class MemoryServer extends Thread {
                     case "PUT":
                         return "P To put a value into a key or to change the type of a key: PUT {key} {type} {value} -> P ";
                     case "SET":
+                        return "P To essentially keep the type of a key if possible. Otherwise, the program will infer the type and set the key to that type: SET {key} {value} -> P ";
                     case "UPDATE":
                         return "P To update a value into a key (do not change type): " + command.toUpperCase()
                                 + " {key} {value} -> P ";
@@ -170,15 +171,31 @@ public class MemoryServer extends Thread {
                     }
                     return "F value " + val + " not of type " + type;
                 case "SET":
-                case "UPDATE":
                     if (args.length < 2)
                         return "F command must include the key and val arguments";
                     String value = args[1];
                     if (memory.containsKey(key)) {
                         DataObject dataObject = memory.get(key);
-                        if (!DataObject.validate(dataObject.getType(), value))
-                            return "F value " + value + " not of type " + dataObject.getType();
-                        dataObject.setValue(value);
+                        if (DataObject.validate(dataObject.getType(), value)) {
+                            dataObject.setValue(value);
+                            return "P ";
+                        }
+                    }
+                    String inferredType = DataObject.inferType(value);
+                    if (DataObject.validate(inferredType, value)) {
+                        memory.put(key, new DataObject(key, inferredType, value));
+                        return "P ";
+                    }
+                    return "F value " + value + " not of type " + inferredType;
+                case "UPDATE":
+                    if (args.length < 2)
+                        return "F command must include the key and val arguments";
+                    String updateValue = args[1];
+                    if (memory.containsKey(key)) {
+                        DataObject dataObject = memory.get(key);
+                        if (!DataObject.validate(dataObject.getType(), updateValue))
+                            return "F value " + updateValue + " not of type " + dataObject.getType();
+                        dataObject.setValue(updateValue);
                         return "P ";
                     }
                     return "F key " + key + " does not exist";

@@ -55,4 +55,22 @@ public class DataObject {
         }
     }
 
+    public static String inferType(String val) {
+        if (validate("long", val)) {
+            long num = Long.parseLong(val);
+            if (Math.abs(num) < Integer.MAX_VALUE / 10.0) {
+                return "integer";
+            } else {
+                return "long";
+            }
+        }
+        String[] types = { "double", "boolean", "string", "char" };
+        for (String type : types) {
+            if (validate(type, val)) {
+                return type;
+            }
+        }
+        return "any";
+    }
+
 }
